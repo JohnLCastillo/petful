@@ -1,12 +1,17 @@
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-
+const {catQueue, theCats, dogQueue, theDogs, helpers} = require('./queue');
 const { PORT, CLIENT_ORIGIN } = require("./config");
 const { dbConnect } = require("./db-mongoose");
 // const {dbConnect} = require('./db-knex');
 
 const app = express();
+
+const startQueue = (queue, data) => {
+    data.forEach(animal => queue.inqueue(animal));
+    return queue;
+  };
 
 app.use(
   morgan(process.env.NODE_ENV === "production" ? "common" : "dev", {
@@ -15,7 +20,7 @@ app.use(
 );
 
 app.get("/api/cat", (req, res) => {
-  rePopulate(catQueue, theCats);
+  startQueue(catQueue, theCats);
 
   const message = "Sorry, no cats up for adoption.";
   if (helpers.peek(catQueue)) {
@@ -26,7 +31,7 @@ app.get("/api/cat", (req, res) => {
 });
 
 app.get("/api/dog", (req, res) => {
-  rePopulate(dogQueue, theDogs);
+  startQueue(dogQueue, theDogs);
 
   const message = "Sorry, no dogs up for adoption.";
   if (helpers.peek(dogQueue)) {
@@ -37,12 +42,12 @@ app.get("/api/dog", (req, res) => {
 });
 
 app.delete("/api/cat", (req, res) => {
-  catQueue.dequeue();
+  catQueue.remove();
   res.status(204).end();
 });
 
 app.delete("/api/dog", (req, res) => {
-  dogQueue.dequeue();
+  dogQueue.remove();
   res.status(204).end();
 });
 
