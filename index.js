@@ -21,7 +21,7 @@ app.use(
 );
 
 const startQueue = (queue, data) => {
-  data.forEach(animal => queue.inqueue(animal));
+  data.forEach(animal => queue.enqueue(animal));
   return queue;
 };
 
@@ -31,7 +31,8 @@ app.get("/api/cat", (req, res) => {
 
   const message = "Sorry, no cats up for adoption.";
   if (helpers.peek(catQueue)) {
-    return res.json(catQueue.first.data);
+    //   setTimeout(() => res.json(catQueue.first.data), 4000);
+    res.json(catQueue.first.data);
   } else {
     res.json({ message });
   }
@@ -47,7 +48,7 @@ app.get("/api/dog", (req, res) => {
     res.json({ message });
   }
 });
-
+//should give error for no input
 app.delete("/api/cat", (req, res) => {
   catQueue.remove();
   res.status(204).end();

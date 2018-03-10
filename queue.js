@@ -12,7 +12,7 @@ class Queue {
     this.last = null;
   }
 
-  inqueue(data) {
+  enqueue(data) {
     const animal = new _Node(data);
     if (this.first === null) {
       this.first = animal;
